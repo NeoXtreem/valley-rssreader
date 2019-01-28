@@ -1,0 +1,1 @@
+git clone https://valley-rss-reader.scm.s1.umbraco.io/60affc32-20e1-4c37-acc4-9d5cee3cb86a.git Valley.RssReader.Web
