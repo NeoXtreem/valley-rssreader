@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Valley.RssReader.Core.Models
+namespace Valley.RssReader.Common.Entities
 {
-    public class RssItemViewModel
+    public class RssItemDto
     {
         public string Id { get; set; }
 

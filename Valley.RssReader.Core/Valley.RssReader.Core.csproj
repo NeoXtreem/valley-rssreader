@@ -22,6 +22,7 @@
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
     <UseGlobalApplicationHostFile />
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -129,6 +130,7 @@
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
     </Reference>
     <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.Helpers.dll</HintPath>
     </Reference>
@@ -183,16 +185,19 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controllers\RssFeedSurfaceController.cs" />
-    <Compile Include="Models\RssFeedViewModel.cs" />
-    <Compile Include="Models\RssItemViewModel.cs" />
+    <Compile Include="Controllers\RssFeedApiController.cs" />
     <Compile Include="Services\Interfaces\IRssReaderService.cs" />
     <Compile Include="Services\RssReaderService.cs" />
-    <Compile Include="UmbracoApplication.cs" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Valley.RssReader.Domain\Valley.RssReader.Common.csproj">
+      <Project>{772f3c8b-de69-48d1-908a-9631442c429e}</Project>
+      <Name>Valley.RssReader.Common</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
