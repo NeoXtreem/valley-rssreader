@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Web.Mvc;
 using Umbraco.Web.WebApi;
 using Valley.RssReader.Common.Entities;
 using Valley.RssReader.Common.Models;
@@ -48,7 +46,7 @@ namespace Valley.RssReader.Core.Controllers
             for (int i = start; i < Math.Min(start + pageSize, totalRecords); i++)
             {
                 int index = i;
-                ApplicationContext.ApplicationCache.RuntimeCache.InsertCacheItem(index.ToString(), () => rssItems[index]);
+                ApplicationContext.ApplicationCache.RuntimeCache.InsertCacheItem(index.ToString(), () => rssItems[index - start]);
             }
 
             return rssItems;

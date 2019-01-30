@@ -5,17 +5,25 @@ export class RssFeed extends Component {
 
   constructor (props) {
     super(props);
-    this.state = { rssItems: [], loading: true, currentCount: 0 };
+    this.state = { rssItems: [], loading: true, currentCount: 0, pageIndex: 0, endOfFeed: false };
     this.loadMore = this.loadMore.bind(this);
     this.loadMore();
   }
 
-  loadMore () {
-    fetch('api/RssFeed/GetRssItems/' + (this.state.currentCount / 5) + '/' + 5)
-      .then(response => response.json())
-      .then(data => {
-        this.setState({ rssItems: this.state.rssItems.concat(data), loading: false, currentCount: this.state.currentCount + data.length });
-      });
+  loadMore() {
+    if (!this.state.endOfFeed) {
+      fetch('api/RssFeed/GetRssItems/' + this.state.pageIndex + '/' + 5)
+        .then(response => response.json())
+        .then(data => {
+          this.setState({
+            rssItems: this.state.rssItems.concat(data),
+            loading: false,
+            currentCount: this.state.currentCount + data.length,
+            pageIndex: this.state.pageIndex + 1,
+            endOfFeed: data.length === 0
+          });
+        });
+    }
   }
 
   static renderRssFeedTable (rssItems) {
@@ -37,7 +45,7 @@ export class RssFeed extends Component {
               <td>{rssItem.description}</td>
               <td>{rssItem.categories}</td>
               <td>{rssItem.date}</td>
-              <td>{rssItem.link}</td>
+              <td><a href={rssItem.link} target="_blank">Go to article</a></td>
             </tr>
           )}
         </tbody>
@@ -47,13 +55,18 @@ export class RssFeed extends Component {
 
   render () {
     let contents = this.state.loading ? <p><em>Loading...</em></p> : RssFeed.renderRssFeedTable(this.state.rssItems);
+    const loadMore = 'Load More';
 
     return (
       <div>
         <h1>RSS Feed</h1>
         <p>Current count: <strong>{this.state.currentCount}</strong></p>
+        <button className="btn btn-primary" onClick={this.loadMore}>{loadMore}</button>
         {contents}
-        <button className="btn btn-primary" onClick={this.loadMore}>Load More</button>
+        <p style={{ color: 'red' }}>{this.state.endOfFeed ? 'No more left to load.' : ''}</p>
+        {
+          this.state.rssItems.length > 0 ? <button className="btn btn-primary" onClick={this.loadMore}>{loadMore}</button> : null
+        }
       </div>
     );
   }

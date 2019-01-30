@@ -186,6 +186,7 @@
   <ItemGroup>
     <Compile Include="Controllers\RssFeedSurfaceController.cs" />
     <Compile Include="Controllers\RssFeedApiController.cs" />
+    <Compile Include="Exceptions\RssReaderException.cs" />
     <Compile Include="Services\Interfaces\IRssReaderService.cs" />
     <Compile Include="Services\RssReaderService.cs" />
   </ItemGroup>

@@ -12,20 +12,17 @@ namespace Valley.RssReader.Common.Services
     {
         private const string CategorySeparator = ", ";
 
-        static RssItemMappingService()
+        public RssItemMappingService()
         {
-            Mapper.Initialize(cfg =>
-            {
-                cfg.CreateMap<RssItemDto, RssItemViewModel>()
-                    .ForMember(d => d.Date, o => o.MapFrom(s => s.Date.ToString()))
-                    .ForMember(d => d.Categories, o => o.MapFrom(s => String.Join(CategorySeparator, s.Categories)))
-                    .ForMember(d => d.Link, o => o.MapFrom(s => s.Link.AbsoluteUri));
+            Mapper.CreateMap<RssItemDto, RssItemViewModel>()
+                .ForMember(d => d.Date, o => o.MapFrom(s => s.Date.ToString()))
+                .ForMember(d => d.Categories, o => o.MapFrom(s => String.Join(CategorySeparator, s.Categories)))
+                .ForMember(d => d.Link, o => o.MapFrom(s => s.Link.AbsoluteUri));
 
-                cfg.CreateMap<RssItemViewModel, RssItemDto>()
-                    .ForMember(d => d.Date, o => o.MapFrom(s => DateTimeOffset.Parse(s.Date)))
-                    .ForMember(d => d.Categories, o => o.MapFrom(s => s.Categories.Split(new[] { CategorySeparator }, StringSplitOptions.None)))
-                    .ForMember(d => d.Link, o => o.MapFrom(s => new Uri(s.Link)));
-            });
+            Mapper.CreateMap<RssItemViewModel, RssItemDto>()
+                .ForMember(d => d.Date, o => o.MapFrom(s => DateTimeOffset.Parse(s.Date)))
+                .ForMember(d => d.Categories, o => o.MapFrom(s => s.Categories.Split(new[] { CategorySeparator }, StringSplitOptions.None)))
+                .ForMember(d => d.Link, o => o.MapFrom(s => new Uri(s.Link)));
         }
 
         public IEnumerable<RssItemViewModel> Map(IEnumerable<RssItemDto> input)
