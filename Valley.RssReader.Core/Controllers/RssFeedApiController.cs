@@ -36,7 +36,8 @@ namespace Valley.RssReader.Core.Controllers
                 return cachedItems;
             }
 
-            RssItemDto[] rssItems = _rssItemMappingService.Map(Services.ContentService.GetPagedChildren(1061, pageIndex, pageSize, out long totalRecords).Select(c => new RssItemViewModel
+            int homeId = Services.ContentService.GetById(new Guid("34e19223-ba7b-4fc3-beaa-8814f689babb")).Id;
+            RssItemDto[] rssItems = _rssItemMappingService.Map(Services.ContentService.GetPagedChildren(homeId, pageIndex, pageSize, out long totalRecords).Select(c => new RssItemViewModel
             {
                 Title = c.GetValue<string>("title"),
                 Description = c.GetValue<string>("description"),

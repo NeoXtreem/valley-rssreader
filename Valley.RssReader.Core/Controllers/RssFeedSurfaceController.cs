@@ -43,9 +43,11 @@ namespace Valley.RssReader.Core.Controllers
 
             try
             {
-                IEnumerable<IContent> rssItems = _rssItemMappingService.Map(_rssReaderService.Read(new Uri(rssFeedUrl.Url))).Select(m =>
+                int homeId = Services.ContentService.GetById(new Guid("34e19223-ba7b-4fc3-beaa-8814f689babb")).Id;
+
+                IEnumerable <IContent> rssItems = _rssItemMappingService.Map(_rssReaderService.Read(new Uri(rssFeedUrl.Url))).Select(m =>
                 {
-                    IContent rssItem = Services.ContentService.CreateContent($"RSS Item {m.Id}", 1061, "RssItem");
+                    IContent rssItem = Services.ContentService.CreateContent($"RSS Item {m.Id}", homeId, "RssItem");
                     rssItem.SetValue("title", m.Title);
                     rssItem.SetValue("description", m.Description);
                     rssItem.SetValue("categories", m.Categories);
@@ -54,7 +56,12 @@ namespace Valley.RssReader.Core.Controllers
                     return rssItem;
                 });
 
-                Services.ContentService.DeleteContentOfType(1060);
+                // Delete all the old RSS items before publishing the newly imported ones.
+                foreach (IContent rssItem in Services.ContentService.GetChildren(homeId))
+                {
+                    Services.ContentService.Delete(rssItem);
+                }
+
                 string[] errors = rssItems.Where(i => !Services.ContentService.SaveAndPublishWithStatus(i).Success).Select(i => $"{i.Name} failed to publish.").ToArray();
 
                 if (errors.Any())
