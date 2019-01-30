@@ -55,13 +55,17 @@ namespace Valley.RssReader.Core.Controllers
                 });
 
                 Services.ContentService.DeleteContentOfType(1060);
+                string[] errors = rssItems.Where(i => !Services.ContentService.SaveAndPublishWithStatus(i).Success).Select(i => $"{i.Name} failed to publish.").ToArray();
 
-                foreach (IContent rssItem in rssItems)
+                if (errors.Any())
                 {
-                    Services.ContentService.SaveAndPublishWithStatus(rssItem);
+                    TempData.Add("Failure", String.Join(Environment.NewLine, errors));
+                }
+                else
+                {
+                    TempData.Add("Success", $"URL {rssFeedUrl.Url} was successfully imported.");
                 }
 
-                TempData.Add("Success", $"URL {rssFeedUrl.Url} was successfully imported.");
                 return RedirectToCurrentUmbracoPage();
             }
             catch (RssReaderException e)
