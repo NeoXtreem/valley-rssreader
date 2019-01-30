@@ -1,37 +1,40 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web.Http;
 using Umbraco.Web.WebApi;
 using Valley.RssReader.Common.Entities;
 using Valley.RssReader.Common.Models;
 using Valley.RssReader.Common.Services.Interfaces;
+using Valley.RssReader.Core.Services.Interfaces;
 
 namespace Valley.RssReader.Core.Controllers
 {
     public class RssFeedApiController : UmbracoApiController
     {
         private readonly IRssItemMappingService _rssItemMappingService;
+        private readonly ICachingService<RssItemDto> _cachingService;
 
-        public RssFeedApiController(IRssItemMappingService rssItemMappingService) => _rssItemMappingService = rssItemMappingService;
+        public RssFeedApiController(IRssItemMappingService rssItemMappingService, ICachingService<RssItemDto> cachingService)
+        {
+            _rssItemMappingService = rssItemMappingService;
+            _cachingService = cachingService;
+        }
 
-        [System.Web.Http.AcceptVerbs("GET")]
+        [AcceptVerbs("GET")]
         public IEnumerable<RssItemDto> GetRssItems(int pageIndex, int pageSize)
         {
             int start = pageIndex * pageSize;
             int end = Math.Min(start + pageSize, Services.ContentService.CountChildren(1061));
+            if (end < start) return Enumerable.Empty<RssItemDto>();
+
+            _cachingService.CacheProvider = ApplicationContext.ApplicationCache.RuntimeCache;
 
             // Check if all the items requested are cached first. If any are missing, then stop using the cache and get the whole page from Umbraco.
-            var cachedItems = new List<RssItemDto>();
-            for (int i = start; i < end; i++)
+            if (_cachingService.Get(Enumerable.Range(start, end - start).Select(i => i.ToString()), out IEnumerable<RssItemDto> cachedItems))
             {
-                var cachedItem = (RssItemDto)ApplicationContext.ApplicationCache.RuntimeCache.GetCacheItem(i.ToString());
-                if (cachedItem is null) break;
-
-                cachedItems.Add(cachedItem);
+                return cachedItems;
             }
-
-            // Only return the cached items if the whole page was cached.
-            if (cachedItems.Count == end - start) return cachedItems;
 
             RssItemDto[] rssItems = _rssItemMappingService.Map(Services.ContentService.GetPagedChildren(1061, pageIndex, pageSize, out long totalRecords).Select(c => new RssItemViewModel
             {
@@ -43,11 +46,7 @@ namespace Valley.RssReader.Core.Controllers
             })).ToArray();
 
             // Cache the retrieved items.
-            for (int i = start; i < Math.Min(start + pageSize, totalRecords); i++)
-            {
-                int index = i;
-                ApplicationContext.ApplicationCache.RuntimeCache.InsertCacheItem(index.ToString(), () => rssItems[index - start]);
-            }
+            _cachingService.Insert(Enumerable.Range(start, Math.Min(pageSize, Convert.ToInt32(totalRecords) - start)).ToDictionary(i => i.ToString(), i => rssItems[i - start]));
 
             return rssItems;
         }

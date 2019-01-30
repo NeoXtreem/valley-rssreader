@@ -13,7 +13,7 @@ namespace Valley.RssReader.Core.Services
     {
         public IEnumerable<RssItemDto> Read(Uri uri)
         {
-            using (XmlReader reader = XmlReader.Create(uri.AbsoluteUri))
+            using (XmlReader reader = XmlReader.Create(uri.AbsoluteUri, new XmlReaderSettings { DtdProcessing = DtdProcessing.Parse }))
             {
                 try
                 {
@@ -29,7 +29,7 @@ namespace Valley.RssReader.Core.Services
                 }
                 catch (XmlException e)
                 {
-                    throw new RssReaderException("Unable to read RSS feed from URL provided.", e) { Url = uri.AbsoluteUri };
+                    throw new RssReaderException($"Unable to read RSS feed from URL provided. {e.Message}", e) { Url = uri.AbsoluteUri };
                 }
             }
         }
