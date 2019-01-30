@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Valley.RssReader.Common.Entities;
+using Valley.RssReader.Core.Entities;
 
 namespace Valley.RssReader.Core.Services.Interfaces
 {

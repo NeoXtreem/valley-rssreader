@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
 using Umbraco.Web.WebApi;
-using Valley.RssReader.Common.Entities;
-using Valley.RssReader.Common.Models;
-using Valley.RssReader.Common.Services.Interfaces;
+using Valley.RssReader.Core.Entities;
+using Valley.RssReader.Core.Models;
 using Valley.RssReader.Core.Services.Interfaces;
 
 namespace Valley.RssReader.Core.Controllers

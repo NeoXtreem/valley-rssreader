@@ -7,9 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
-using Valley.RssReader.Common.Entities;
-using Valley.RssReader.Common.Models;
-using Valley.RssReader.Common.Services.Interfaces;
+using Valley.RssReader.Core.Entities;
+using Valley.RssReader.Core.Models;
+using Valley.RssReader.Core.Services.Interfaces;
 
 namespace Valley.RssReader.Client.Controllers
 {

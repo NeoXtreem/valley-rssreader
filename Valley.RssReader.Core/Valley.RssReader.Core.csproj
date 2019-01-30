@@ -125,6 +125,7 @@
       <HintPath>..\packages\semver.1.1.2\lib\net45\Semver.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
@@ -186,21 +187,20 @@
   <ItemGroup>
     <Compile Include="Controllers\RssFeedSurfaceController.cs" />
     <Compile Include="Controllers\RssFeedApiController.cs" />
+    <Compile Include="Entities\RssItemDto.cs" />
     <Compile Include="Exceptions\RssReaderException.cs" />
+    <Compile Include="Models\RssFeedUrlViewModel.cs" />
+    <Compile Include="Models\RssItemViewModel.cs" />
     <Compile Include="Services\CachingService.cs" />
     <Compile Include="Services\Interfaces\ICachingService.cs" />
+    <Compile Include="Services\Interfaces\IRssItemMappingService.cs" />
     <Compile Include="Services\Interfaces\IRssReaderService.cs" />
+    <Compile Include="Services\RssItemMappingService.cs" />
     <Compile Include="Services\RssReaderService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Valley.RssReader.Domain\Valley.RssReader.Common.csproj">
-      <Project>{772f3c8b-de69-48d1-908a-9631442c429e}</Project>
-      <Name>Valley.RssReader.Common</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

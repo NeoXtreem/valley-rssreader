@@ -4,8 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Valley.RssReader.Common.Services;
-using Valley.RssReader.Common.Services.Interfaces;
+using Valley.RssReader.Core.Services;
+using Valley.RssReader.Core.Services.Interfaces;
 
 namespace Valley.RssReader.Client
 {

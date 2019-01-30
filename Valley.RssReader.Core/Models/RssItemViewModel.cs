@@ -1,4 +1,4 @@
-﻿namespace Valley.RssReader.Common.Models
+﻿namespace Valley.RssReader.Core.Models
 {
     public class RssItemViewModel
     {
