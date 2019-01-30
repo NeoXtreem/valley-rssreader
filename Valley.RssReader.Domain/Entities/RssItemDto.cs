@@ -15,6 +15,6 @@ namespace Valley.RssReader.Common.Entities
 
         public DateTimeOffset Date { get; set; }
 
-        public Uri Link { get; set; }
+        public IEnumerable<Uri> Links { get; set; }
     }
 }

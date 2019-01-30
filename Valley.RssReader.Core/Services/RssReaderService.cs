@@ -25,7 +25,7 @@ namespace Valley.RssReader.Core.Services
                         Description = i.Summary.Text,
                         Categories = i.Categories.Select(c => c.Name),
                         Date = i.PublishDate,
-                        Link = i.Links.First().GetAbsoluteUri()
+                        Links = i.Links.Select(l => l.GetAbsoluteUri())
                     });
                 }
                 catch (XmlException e)

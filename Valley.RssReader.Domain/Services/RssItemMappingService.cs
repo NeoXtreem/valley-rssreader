@@ -17,12 +17,12 @@ namespace Valley.RssReader.Common.Services
             Mapper.CreateMap<RssItemDto, RssItemViewModel>()
                 .ForMember(d => d.Date, o => o.MapFrom(s => s.Date.ToString()))
                 .ForMember(d => d.Categories, o => o.MapFrom(s => String.Join(CategorySeparator, s.Categories)))
-                .ForMember(d => d.Link, o => o.MapFrom(s => s.Link.AbsoluteUri));
+                .ForMember(d => d.Link, o => o.MapFrom(s => s.Links.Any() ? s.Links.First().AbsoluteUri : null));
 
             Mapper.CreateMap<RssItemViewModel, RssItemDto>()
                 .ForMember(d => d.Date, o => o.MapFrom(s => DateTimeOffset.Parse(s.Date)))
                 .ForMember(d => d.Categories, o => o.MapFrom(s => s.Categories.Split(new[] { CategorySeparator }, StringSplitOptions.None)))
-                .ForMember(d => d.Link, o => o.MapFrom(s => new Uri(s.Link)));
+                .ForMember(d => d.Links, o => o.MapFrom(s => new[] { new Uri(s.Link) }));
         }
 
         public IEnumerable<RssItemViewModel> Map(IEnumerable<RssItemDto> input)

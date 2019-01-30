@@ -45,7 +45,7 @@ namespace Valley.RssReader.Core.Controllers
             {
                 int homeId = Services.ContentService.GetById(new Guid("34e19223-ba7b-4fc3-beaa-8814f689babb")).Id;
 
-                IEnumerable <IContent> rssItems = _rssItemMappingService.Map(_rssReaderService.Read(new Uri(rssFeedUrl.Url))).Select(m =>
+                IContent[] rssItems = _rssItemMappingService.Map(_rssReaderService.Read(new Uri(rssFeedUrl.Url))).Select(m =>
                 {
                     IContent rssItem = Services.ContentService.CreateContent($"RSS Item {m.Id}", homeId, "RssItem");
                     rssItem.SetValue("title", m.Title);
@@ -54,7 +54,7 @@ namespace Valley.RssReader.Core.Controllers
                     rssItem.SetValue("date", m.Date);
                     rssItem.SetValue("link", m.Link);
                     return rssItem;
-                });
+                }).ToArray();
 
                 // Delete all the old RSS items before publishing the newly imported ones.
                 foreach (IContent rssItem in Services.ContentService.GetChildren(homeId))
@@ -62,11 +62,21 @@ namespace Valley.RssReader.Core.Controllers
                     Services.ContentService.Delete(rssItem);
                 }
 
-                string[] errors = rssItems.Where(i => !Services.ContentService.SaveAndPublishWithStatus(i).Success).Select(i => $"{i.Name} failed to publish.").ToArray();
+                // Clear the cache so that clients will read the new items.
+                ApplicationContext.ApplicationCache.RuntimeCache.ClearAllCache();
 
-                if (errors.Any())
+                // Save and publish all items, but delete any that fail to publish so that they're not available to the client.
+                var errors = 0;
+                foreach (IContent rssItem in rssItems)
                 {
-                    TempData.Add("Failure", String.Join(Environment.NewLine, errors));
+                    if (Services.ContentService.SaveAndPublishWithStatus(rssItem).Success) continue;
+                    Services.ContentService.Delete(rssItem);
+                    errors++;
+                }
+
+                if (errors > 0)
+                {
+                    TempData.Add("Failure", $"{(errors == rssItems.Length ? "All" : "Some")} items failed to publish.");
                 }
                 else
                 {
