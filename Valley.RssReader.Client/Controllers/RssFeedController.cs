@@ -1,7 +1,10 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Valley.RssReader.Common.Entities;
@@ -31,7 +34,9 @@ namespace Valley.RssReader.Client.Controllers
             const string addressSetting = "ServiceBaseAddress";
             #endif
 
-            HttpResponseMessage response = await new HttpClient().GetAsync(_configuration.GetValue<string>(addressSetting) + $"/Umbraco/Api/RssFeedApi/GetRssItems?pageIndex={pageIndex}&pageSize={pageSize}");
+            HttpResponseMessage response = await new HttpClient().GetAsync(QueryHelpers.AddQueryString(
+                new Uri(new Uri(_configuration.GetValue<string>(addressSetting)), "Umbraco/Api/RssFeedApi/GetRssItems").AbsoluteUri,
+                new (string key, int value)[] { ("pageIndex", pageIndex), ("pageSize", pageSize) }.ToDictionary(p => p.key, p => p.value.ToString())));
 
             if (response.IsSuccessStatusCode)
             {
