@@ -24,8 +24,9 @@ namespace Valley.RssReader.Core.Controllers
         [AcceptVerbs("GET")]
         public IEnumerable<RssItemDto> GetRssItems(int pageIndex, int pageSize)
         {
+            int homeId = Services.ContentService.GetById(new Guid("34e19223-ba7b-4fc3-beaa-8814f689babb")).Id;
             int start = pageIndex * pageSize;
-            int end = Math.Min(start + pageSize, Services.ContentService.CountChildren(1061));
+            int end = Math.Min(start + pageSize, Services.ContentService.CountChildren(homeId));
             if (end < start) return Enumerable.Empty<RssItemDto>();
 
             _cachingService.CacheProvider = ApplicationContext.ApplicationCache.RuntimeCache;
@@ -36,7 +37,6 @@ namespace Valley.RssReader.Core.Controllers
                 return cachedItems;
             }
 
-            int homeId = Services.ContentService.GetById(new Guid("34e19223-ba7b-4fc3-beaa-8814f689babb")).Id;
             RssItemDto[] rssItems = _rssItemMappingService.Map(Services.ContentService.GetPagedChildren(homeId, pageIndex, pageSize, out long totalRecords).Select(c => new RssItemViewModel
             {
                 Title = c.GetValue<string>("title"),

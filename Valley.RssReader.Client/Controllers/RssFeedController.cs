@@ -25,8 +25,7 @@ namespace Valley.RssReader.Client.Controllers
         [HttpGet("[action]/{pageIndex}/{pageSize}")]
         public async Task<ActionResult<IEnumerable<RssItemViewModel>>> GetRssItems(int pageIndex, int pageSize)
         {
-            var httpClient = new HttpClient();
-            HttpResponseMessage response = await httpClient.GetAsync(_configuration.GetValue<string>("ServiceBaseAddress") + $"/Umbraco/Api/RssFeedApi/GetRssItems?pageIndex={pageIndex}&pageSize={pageSize}");
+            HttpResponseMessage response = await new HttpClient().GetAsync(_configuration.GetValue<string>("ServiceBaseAddress") + $"/Umbraco/Api/RssFeedApi/GetRssItems?pageIndex={pageIndex}&pageSize={pageSize}");
 
             if (response.IsSuccessStatusCode)
             {
