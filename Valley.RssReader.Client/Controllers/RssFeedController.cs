@@ -28,10 +28,11 @@ namespace Valley.RssReader.Client.Controllers
         [HttpGet("[action]/{pageIndex}/{pageSize}")]
         public async Task<ActionResult<IEnumerable<RssItemViewModel>>> GetRssItems(int pageIndex, int pageSize)
         {
+            const string addressSetting =
             #if DEBUG
-            const string addressSetting = "ServiceBaseAddressLocal";
+            "ServiceBaseAddressLocal";
             #else
-            const string addressSetting = "ServiceBaseAddress";
+            "ServiceBaseAddress";
             #endif
 
             HttpResponseMessage response = await new HttpClient().GetAsync(QueryHelpers.AddQueryString(
@@ -43,7 +44,7 @@ namespace Valley.RssReader.Client.Controllers
                 return Ok(_rssItemMappingService.Map(JsonConvert.DeserializeObject<IEnumerable<RssItemDto>>(await response.Content.ReadAsStringAsync())));
             }
 
-            return BadRequest(response.RequestMessage);
+            return BadRequest(response.ReasonPhrase);
         }
     }
 }

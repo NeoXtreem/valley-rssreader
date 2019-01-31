@@ -5,14 +5,29 @@ export class RssFeed extends Component {
 
   constructor (props) {
     super(props);
-    this.state = { rssItems: [], loading: true, currentCount: 0, pageIndex: 0, endOfFeed: false };
+    this.state = { rssItems: [], loading: true, currentCount: 0, pageIndex: 0, endOfFeed: false, message: '' };
     this.loadMore = this.loadMore.bind(this);
+    this.handleErrors = this.handleErrors.bind(this);
     this.loadMore();
+  }
+
+  handleErrors(response) {
+    if (!response.ok) {
+      this.setState({
+        loading: false,
+        message: response.statusText
+      });
+      throw Error(response.statusText);
+    } else {
+      this.setState({ message: '' });
+    }
+    return response;
   }
 
   loadMore() {
     if (!this.state.endOfFeed) {
       fetch('api/RssFeed/GetRssItems/' + this.state.pageIndex + '/' + 5)
+        .then(this.handleErrors)
         .then(response => response.json())
         .then(data => {
           this.setState({
@@ -22,7 +37,8 @@ export class RssFeed extends Component {
             pageIndex: this.state.pageIndex + 1,
             endOfFeed: data.length === 0
           });
-        });
+        })
+        .catch(error => console.log(error));
     }
   }
 
@@ -63,7 +79,7 @@ export class RssFeed extends Component {
         <p>Current count: <strong>{this.state.currentCount}</strong></p>
         <button className="btn btn-primary" onClick={this.loadMore}>{loadMore}</button>
         {contents}
-        <p style={{ color: 'red' }}>{this.state.endOfFeed ? 'No more left to load.' : ''}</p>
+        <p style={{ color: 'red' }}>{this.state.endOfFeed ? 'No more left to load.' : this.state.message}</p>
         {
           this.state.rssItems.length > 0 ? <button className="btn btn-primary" onClick={this.loadMore}>{loadMore}</button> : null
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Web.Mvc;
 using Umbraco.Core.Models;
@@ -34,15 +35,18 @@ namespace Valley.RssReader.Core.Controllers
         [HttpPost]
         public ActionResult ImportUrl(RssFeedUrlViewModel rssFeedUrl)
         {
+            const string failure = "Failure";
+            const string success = "Success";
+
             if (!ModelState.IsValid)
             {
-                TempData.Add("Failure", "Please enter a valid URL.");
+                TempData.Add(failure, "Please enter a valid URL.");
                 return CurrentUmbracoPage();
             }
 
             try
             {
-                int homeId = Services.ContentService.GetById(new Guid("34e19223-ba7b-4fc3-beaa-8814f689babb")).Id;
+                int homeId = Services.ContentService.GetById(new Guid(ConfigurationManager.AppSettings["homeContentNodeGuid"])).Id;
 
                 IContent[] rssItems = _rssItemMappingService.Map(_rssReaderService.Read(new Uri(rssFeedUrl.Url))).Select(m =>
                 {
@@ -75,18 +79,18 @@ namespace Valley.RssReader.Core.Controllers
 
                 if (errors > 0)
                 {
-                    TempData.Add("Failure", $"{(errors == rssItems.Length ? "All" : "Some")} items failed to publish.");
+                    TempData.Add(failure, $"{(errors == rssItems.Length ? "All" : "Some")} items failed to publish.");
                 }
                 else
                 {
-                    TempData.Add("Success", $"URL {rssFeedUrl.Url} was successfully imported.");
+                    TempData.Add(success, $"URL {rssFeedUrl.Url} was successfully imported.");
                 }
 
                 return RedirectToCurrentUmbracoPage();
             }
             catch (RssReaderException e)
             {
-                TempData.Add("Failure", $"{e.Message} URL: {e.Url}");
+                TempData.Add(failure, $"{e.Message} URL: {e.Url}");
                 return CurrentUmbracoPage();
             }
         }
