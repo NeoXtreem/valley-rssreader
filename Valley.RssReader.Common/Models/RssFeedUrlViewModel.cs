@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Valley.RssReader.Core.Models
+namespace Valley.RssReader.Common.Models
 {
     public class RssFeedUrlViewModel
     {

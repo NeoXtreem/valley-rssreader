@@ -4,7 +4,7 @@ using System.Linq;
 using System.ServiceModel.Syndication;
 using System.Xml;
 using System.Xml.Schema;
-using Valley.RssReader.Core.Entities;
+using Valley.RssReader.Common.Entities;
 using Valley.RssReader.Core.Exceptions;
 using Valley.RssReader.Core.Services.Interfaces;
 

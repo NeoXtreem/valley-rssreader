@@ -6,7 +6,7 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Valley.RssReader.Web", "Valley.RssReader.Web\", "{485BADC1-F2E8-407C-8BCD-E3E2FC82E5D3}"
 	ProjectSection(WebsiteProperties) = preProject
 		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.5"
-		ProjectReferences = ""
+		ProjectReferences = "{772f3c8b-de69-48d1-908a-9631442c429e}|Valley.RssReader.Common.dll;"
 		Debug.AspNetCompiler.VirtualPath = "/localhost_4595"
 		Debug.AspNetCompiler.PhysicalPath = "Valley.RssReader.Web\"
 		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_4595\"
@@ -33,6 +33,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Valley.RssReader.Core", "Va
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Valley.RssReader.Client", "Valley.RssReader.Client\Valley.RssReader.Client.csproj", "{4F239BBB-3D81-49D3-B737-7BF39B4AEF0B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Valley.RssReader.Common", "Valley.RssReader.Common\Valley.RssReader.Common.csproj", "{772F3C8B-DE69-48D1-908A-9631442C429E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -49,6 +51,10 @@ Global
 		{4F239BBB-3D81-49D3-B737-7BF39B4AEF0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4F239BBB-3D81-49D3-B737-7BF39B4AEF0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4F239BBB-3D81-49D3-B737-7BF39B4AEF0B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{772F3C8B-DE69-48D1-908A-9631442C429E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{772F3C8B-DE69-48D1-908A-9631442C429E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{772F3C8B-DE69-48D1-908A-9631442C429E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{772F3C8B-DE69-48D1-908A-9631442C429E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

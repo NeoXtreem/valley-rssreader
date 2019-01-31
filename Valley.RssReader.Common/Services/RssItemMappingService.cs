@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
-using Valley.RssReader.Core.Entities;
-using Valley.RssReader.Core.Models;
-using Valley.RssReader.Core.Services.Interfaces;
+using Valley.RssReader.Common.Entities;
+using Valley.RssReader.Common.Models;
+using Valley.RssReader.Common.Services.Interfaces;
 
-namespace Valley.RssReader.Core.Services
+namespace Valley.RssReader.Common.Services
 {
     public class RssItemMappingService : IRssItemMappingService
     {

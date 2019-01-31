@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Valley.RssReader.Core.Entities
+namespace Valley.RssReader.Common.Entities
 {
     public class RssItemDto
     {

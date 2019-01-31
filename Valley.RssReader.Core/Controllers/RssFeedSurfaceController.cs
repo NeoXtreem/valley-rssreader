@@ -5,8 +5,9 @@ using System.Linq;
 using System.Web.Mvc;
 using Umbraco.Core.Models;
 using Umbraco.Web.Mvc;
+using Valley.RssReader.Common.Models;
+using Valley.RssReader.Common.Services.Interfaces;
 using Valley.RssReader.Core.Exceptions;
-using Valley.RssReader.Core.Models;
 using Valley.RssReader.Core.Services.Interfaces;
 
 namespace Valley.RssReader.Core.Controllers

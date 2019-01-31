@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using Valley.RssReader.Core.Entities;
-using Valley.RssReader.Core.Models;
+using Valley.RssReader.Common.Entities;
+using Valley.RssReader.Common.Models;
 
-namespace Valley.RssReader.Core.Services.Interfaces
+namespace Valley.RssReader.Common.Services.Interfaces
 {
     public interface IRssItemMappingService
     {
