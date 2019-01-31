@@ -125,6 +125,7 @@
       <HintPath>..\packages\semver.1.1.2\lib\net45\Semver.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -188,6 +189,7 @@
     <Compile Include="Controllers\RssFeedSurfaceController.cs" />
     <Compile Include="Controllers\RssFeedApiController.cs" />
     <Compile Include="Exceptions\RssReaderException.cs" />
+    <Compile Include="Models\RssFeedUrlViewModel.cs" />
     <Compile Include="Services\CachingService.cs" />
     <Compile Include="Services\Interfaces\ICachingService.cs" />
     <Compile Include="Services\Interfaces\IRssReaderService.cs" />
