@@ -5,7 +5,6 @@ using System.Linq;
 using System.Web.Mvc;
 using Umbraco.Core.Models;
 using Umbraco.Web.Mvc;
-using Valley.RssReader.Common.Models;
 using Valley.RssReader.Common.Services.Interfaces;
 using Valley.RssReader.Core.Exceptions;
 using Valley.RssReader.Core.Models;
@@ -50,9 +49,10 @@ namespace Valley.RssReader.Core.Controllers
             {
                 int homeId = Services.ContentService.GetById(new Guid(ConfigurationManager.AppSettings["homeContentNodeGuid"])).Id;
 
-                IContent[] rssItems = _rssItemMappingService.Map(_rssReaderService.Read(new Uri(rssFeedUrl.Url))).Select(m =>
+                IContent[] newRssItems = _rssItemMappingService.Map(_rssReaderService.Read(new Uri(rssFeedUrl.Url))).Select(m =>
                 {
                     IContent rssItem = Services.ContentService.CreateContent($"RSS Item {m.Id}", homeId, "RssItem");
+                    rssItem.SetValue("rssId", m.Id);
                     rssItem.SetValue("title", m.Title);
                     rssItem.SetValue("description", m.Description);
                     rssItem.SetValue("categories", m.Categories);
@@ -61,18 +61,21 @@ namespace Valley.RssReader.Core.Controllers
                     return rssItem;
                 }).ToArray();
 
-                // Delete all the old RSS items before publishing the newly imported ones.
-                foreach (IContent rssItem in Services.ContentService.GetChildren(homeId))
-                {
-                    Services.ContentService.Delete(rssItem);
-                }
+                IContent[] oldRssItems = Services.ContentService.GetChildren(homeId).ToArray();
+
+                var rssItemContentComparer = new RssItemContentComparer();
+
+                // Delete any old RSS items from the content tree that are no longer part of the feed.
+                oldRssItems.Except(newRssItems, rssItemContentComparer).AsParallel().ForAll(c => Services.ContentService.Delete(c));
 
                 // Clear the cache so that clients will read the new items.
                 ApplicationContext.ApplicationCache.RuntimeCache.ClearAllCache();
 
-                // Save and publish all items, but delete any that fail to publish so that they're not available to the client.
+                IContent[] rssItemsToPublish = newRssItems.Except(oldRssItems, rssItemContentComparer).ToArray();
+
+                // Save and publish all new items, but delete any that fail to publish so that they're not available to the client.
                 var errors = 0;
-                foreach (IContent rssItem in rssItems)
+                foreach (IContent rssItem in rssItemsToPublish)
                 {
                     if (Services.ContentService.SaveAndPublishWithStatus(rssItem).Success) continue;
                     Services.ContentService.Delete(rssItem);
@@ -81,7 +84,7 @@ namespace Valley.RssReader.Core.Controllers
 
                 if (errors > 0)
                 {
-                    TempData.Add(failure, $"{(errors == rssItems.Length ? "All" : "Some")} items failed to publish.");
+                    TempData.Add(failure, $"{(errors == rssItemsToPublish.Length ? "All" : "Some")} items failed to publish.");
                 }
                 else
                 {
@@ -95,6 +98,21 @@ namespace Valley.RssReader.Core.Controllers
                 TempData.Add(failure, $"{e.Message} URL: {e.Url}");
                 return CurrentUmbracoPage();
             }
+        }
+
+        private class RssItemContentComparer : IEqualityComparer<IContent>
+        {
+            // Products are equal if their names and product numbers are equal.
+            public bool Equals(IContent x, IContent y)
+            {
+                if (Object.ReferenceEquals(x, y)) return true;
+                if (x is null || y is null) return false;
+
+                // Check whether the content nodes' IDs are equal.
+                return x.GetValue<string>("rssId") == y.GetValue<string>("rssId");
+            }
+
+            public int GetHashCode(IContent product) => product.GetValue<string>("rssId").GetHashCode();
         }
     }
 }
