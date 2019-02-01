@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Web.Mvc;
+using Autofac.Core;
+using Umbraco.Core.Logging;
 using Umbraco.Core.Models;
 using Umbraco.Web.Mvc;
 using Valley.RssReader.Common.Services.Interfaces;
@@ -47,7 +49,7 @@ namespace Valley.RssReader.Core.Controllers
 
             try
             {
-                int homeId = Services.ContentService.GetById(new Guid(ConfigurationManager.AppSettings["homeContentNodeGuid"])).Id;
+                int homeId = Services.ContentService.GetRootContent().Single(c => c.Name == "Home").Id;
 
                 IContent[] newRssItems = _rssItemMappingService.Map(_rssReaderService.Read(new Uri(rssFeedUrl.Url))).Select(m =>
                 {
@@ -61,16 +63,8 @@ namespace Valley.RssReader.Core.Controllers
                     return rssItem;
                 }).ToArray();
 
-                IContent[] oldRssItems = Services.ContentService.GetChildren(homeId).ToArray();
-
                 var rssItemContentComparer = new RssItemContentComparer();
-
-                // Delete any old RSS items from the content tree that are no longer part of the feed.
-                oldRssItems.Except(newRssItems, rssItemContentComparer).AsParallel().ForAll(c => Services.ContentService.Delete(c));
-
-                // Clear the cache so that clients will read the new items.
-                ApplicationContext.ApplicationCache.RuntimeCache.ClearAllCache();
-
+                IContent[] oldRssItems = Services.ContentService.GetChildren(homeId).ToArray();
                 IContent[] rssItemsToPublish = newRssItems.Except(oldRssItems, rssItemContentComparer).ToArray();
 
                 // Save and publish all new items, but delete any that fail to publish so that they're not available to the client.
@@ -78,24 +72,39 @@ namespace Valley.RssReader.Core.Controllers
                 foreach (IContent rssItem in rssItemsToPublish)
                 {
                     if (Services.ContentService.SaveAndPublishWithStatus(rssItem).Success) continue;
+                    LogHelper.Warn(GetType(), $"{rssItem.Name} failed to publish.");
                     Services.ContentService.Delete(rssItem);
                     errors++;
                 }
 
+                bool updated = errors == 0 || errors < rssItemsToPublish.Length;
+                if (updated)
+                {
+                    // Delete any old RSS items from the content tree that are no longer part of the feed.
+                    oldRssItems.Except(newRssItems, rssItemContentComparer).AsParallel().ForAll(c => Services.ContentService.Delete(c));
+
+                    // Clear the cache so that clients will read the new items.
+                    ApplicationContext.ApplicationCache.RuntimeCache.ClearAllCache();
+                }
+
                 if (errors > 0)
                 {
-                    TempData.Add(failure, $"{(errors == rssItemsToPublish.Length ? "All" : "Some")} items failed to publish.");
+                    TempData.Add(failure, $"{(updated ? "Some" : "All")} items failed to publish.");
                 }
                 else
                 {
-                    TempData.Add(success, $"URL {rssFeedUrl.Url} was successfully imported.");
+                    string message = $"URL {rssFeedUrl.Url} was successfully imported.";
+                    LogHelper.Info(GetType(), message);
+                    TempData.Add(success, message);
                 }
 
                 return RedirectToCurrentUmbracoPage();
             }
             catch (RssReaderException e)
             {
-                TempData.Add(failure, $"{e.Message} URL: {e.Url}");
+                string message = $"{e.Message} URL: {e.Url}";
+                LogHelper.WarnWithException(GetType(), message, e);
+                TempData.Add(failure, message);
                 return CurrentUmbracoPage();
             }
         }

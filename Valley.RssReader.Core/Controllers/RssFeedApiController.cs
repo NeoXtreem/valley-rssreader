@@ -25,7 +25,7 @@ namespace Valley.RssReader.Core.Controllers
         [AcceptVerbs("GET")]
         public IEnumerable<RssItemDto> GetRssItems(int pageIndex, int pageSize)
         {
-            int homeId = Services.ContentService.GetById(new Guid(ConfigurationManager.AppSettings["homeContentNodeGuid"])).Id;
+            int homeId = Services.ContentService.GetRootContent().Single(c => c.Name == "Home").Id;
             int start = pageIndex * pageSize;
             int end = Math.Min(start + pageSize, Services.ContentService.CountChildren(homeId));
             if (end < start) return Enumerable.Empty<RssItemDto>();
